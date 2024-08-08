@@ -1,0 +1,40 @@
+version: 2.1
+
+executors:
+  amd64:
+    machine:
+      image: ubuntu-2204:2024.05.1
+    resource_class: medium
+
+jobs:
+  repl:
+    executor: amd64
+    steps:
+      - run:
+          name: Spin up Clojure container that starts a REPL server
+          command: |
+            docker run --detach clojure:lein lein repl :start
+      # sleep to wait for the container to be ready
+      - run: sleep 20
+      - run:
+          name: Save this container as another image
+          command: |
+            docker commit $(docker ps -aq | head -1) kelvintaywl-cci/clojure
+      - run:
+          name: Spin up a mock REPL server in background
+          background: true
+          command: |
+           docker run -p 6005:6005 clojure:latest lein repl :headless :host 0.0.0.0 :port 6005
+      - run: dockerize -wait tcp://0.0.0.0:6005
+      - run:
+          name: test REPL connection
+          command: |
+            INET_ADDR="$(ip -4 route get 192.0.2.1 | grep -o 'src [0-9.]\{1,\}' | awk '{ print $2 }')"          
+            docker run --rm kelvintaywl-cci/clojure lein repl :connect "${INET_ADDR}":6005<<EOD
+exit
+EOD
+
+workflows:
+  airgapped-mock:
+    jobs:
+      - repl
