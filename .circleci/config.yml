@@ -5,10 +5,17 @@ executors:
     machine:
       image: ubuntu-2204:2024.05.1
     resource_class: medium
-
+  arm64:
+    machine:
+      image: ubuntu-2204:2024.05.1
+    resource_class: arm.medium
+    
 jobs:
   repl:
-    executor: amd64
+    parameters:
+      exec:
+        type: executor
+    executor: << parameters.exe >>
     steps:
       - run:
           name: Spin up Clojure container that starts a REPL server
@@ -37,4 +44,9 @@ jobs:
 workflows:
   airgapped-mock:
     jobs:
-      - repl
+      - repl:
+          matrix:
+            parameters:
+              exec:
+                - arm64
+                - amd64
