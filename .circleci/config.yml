@@ -31,8 +31,8 @@ jobs:
           command: |
             INET_ADDR="$(ip -4 route get 192.0.2.1 | grep -o 'src [0-9.]\{1,\}' | awk '{ print $2 }')"          
             docker run --rm kelvintaywl-cci/clojure lein repl :connect "${INET_ADDR}":6005<<EOD
-exit
-EOD
+            exit
+            EOD
 
 workflows:
   airgapped-mock:
