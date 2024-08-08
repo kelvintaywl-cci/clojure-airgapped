@@ -25,7 +25,7 @@ jobs:
           background: true
           command: |
            docker run -p 6005:6005 clojure:latest lein repl :headless :host 0.0.0.0 :port 6005
-      - run: dockerize -wait tcp://0.0.0.0:6005
+      - run: sleep 20
       - run:
           name: test REPL connection
           command: |
