@@ -30,6 +30,8 @@ jobs:
       - run:
           name: Spin up a mock REPL server in background
           background: true
+          # NOTE: this is in place of the port-forwarded frontend pod, mentioned in https://circleci.com/docs/server/v4.3/operator/troubleshooting-and-support/#air-gap-repl
+          # I simply spin up and expose a REPL server on port 6005.
           command: |
            docker run -p 6005:6005 clojure:latest lein repl :headless :host 0.0.0.0 :port 6005
       - run: sleep 20
