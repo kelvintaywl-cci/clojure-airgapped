@@ -15,7 +15,7 @@ jobs:
     parameters:
       exec:
         type: executor
-    executor: << parameters.exe >>
+    executor: << parameters.exec >>
     steps:
       - run:
           name: Spin up Clojure container that starts a REPL server
